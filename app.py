@@ -30,15 +30,16 @@ if "username" not in st.session_state:
 def check_password():
     """Validates username and password against secrets.toml"""
     def password_entered():
-        user = st.session_state["username_input"]
-        pwd = st.session_state["password_input"]
+        # FIX: Use .get() to avoid KeyError if Streamlit has already cleaned up the widget
+        user = st.session_state.get("username_input", "")
+        pwd = st.session_state.get("password_input", "")
         
         # Check if user exists and password matches
         if user in st.secrets["auth"] and st.secrets["auth"][user] == pwd:
             st.session_state["authenticated"] = True
             st.session_state["username"] = user
-            del st.session_state["username_input"]
-            del st.session_state["password_input"]
+            # CRITICAL FIX: Do NOT manually delete session keys here. 
+            # Let Streamlit handle widget cleanup naturally.
         else:
             st.session_state["authenticated"] = False
             st.error("😕 User not known or password incorrect")
@@ -89,9 +90,15 @@ def main():
             st.write("**Crave Infotech**")
             
         st.write(f"👤 **User:** {st.session_state['username']}")
+        
         if st.button("Logout"):
             st.session_state["authenticated"] = False
             st.session_state["username"] = None
+            # Only clear inputs on explicit LOGOUT
+            if "username_input" in st.session_state:
+                del st.session_state["username_input"]
+            if "password_input" in st.session_state:
+                del st.session_state["password_input"]
             st.rerun()
             
         st.divider()
