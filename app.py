@@ -83,11 +83,7 @@ def check_password():
 def main():
     # Sidebar
     with st.sidebar:
-        try:
-            logo = Image.open("assets/crave_logo.png")
-            st.image(logo, width=150)
-        except:
-            st.write("**Crave Infotech**")
+
             
         st.write(f"👤 **User:** {st.session_state['username']}")
         
@@ -105,15 +101,23 @@ def main():
         st.info("💡 **Tip:** Upload multiple resumes to compare them side-by-side.")
 
     # Header
-    st.title("🚀 AI Resume Analyzer")
-    st.markdown("Analyze candidates against job descriptions with deep learning insights.")
+    logo_col, title_col = st.columns([1, 4])
+    
+    with logo_col:
+        try:
+            logo = Image.open("assets/crave_logo.png")
+            st.image(logo, width=200)
+        except FileNotFoundError:
+            st.header("Crave Infotech")
+    with title_col:
+        st.title("AI Resume Analyzer")
     st.divider()
 
     # Inputs
     col_upload, col_jd = st.columns([1, 1.5], gap="large")
     
     with col_upload:
-        st.subheader("1️⃣ Upload Resumes")
+        st.subheader("Upload Resumes")
         resume_files = st.file_uploader(
             "Drop PDF or DOCX files here",
             type=["pdf", "docx"],
@@ -121,7 +125,7 @@ def main():
         )
 
     with col_jd:
-        st.subheader("2️⃣ Job Description")
+        st.subheader("Job Description")
         jd_text = st.text_area(
             "Paste the complete JD here...", 
             height=400, 
